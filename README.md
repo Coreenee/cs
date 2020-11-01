@@ -1409,13 +1409,13 @@
 
   ## 인터넷 작동 방식
 
-  1. 주소표시줄에 URL을 입력하고 엔터를 친다.
+  1. #### 주소표시줄에 URL을 입력하고 엔터를 친다.
 
-  2. 웹 브라우저가 URL을 해석한다.
+  2. #### 웹 브라우저가 URL을 해석한다.
 
-  3. URL이 문법에 맞으면 Punycode encoding을 url의 host 부분에 적용한다.
+  3. #### URL이 문법에 맞으면 Punycode encoding을 url의 host 부분에 적용한다.
 
-  4. HSTS (HTTP Strict Transport Security) 목록을 로드해서 확인한다.
+  4. #### HSTS (HTTP Strict Transport Security) 목록을 로드해서 확인한다.
 
      > HSTS 목록에 있으면 HTTPS로 보내고, 아닌 경우에는 HTTP로 보낸다.
      >
@@ -1423,13 +1423,13 @@
      > >
      > > - HTTP 대신 HTTPS만을 사용하여 통신해야 한다고 웹 사이트가 웹 브라우저에 알리는 보안 기능
 
-  5. DNS(Domain Name Server) 조회한다.
+  5. #### DNS(Domain Name Server) 조회한다.
 
      > 1. DNS에 요청을 보내기 전에 Browser에 해당 Domain이 캐시에 있는지 확인한다.
      > 2. 없을 경우 로컬에 저장돼 있는 hosts 파일에서 참조할 수 있는 Domain이 있는지 확인한다.
      > 3. 1,2번이 모두 실패하면 Network stack에 구성돼 있는 DNS로 요청을 보낸다.
 
-  6. ARP(Address Resolution Protocol)로 대상의 IP와 MAC address를 알아낸다.
+  6. #### ARP(Address Resolution Protocol)로 대상의 IP와 MAC address를 알아낸다.
 
      > - ARP broadcast를 보내려면 Network stack library가 조회 할 대상 IP 주소와 ARP broadcast에 사용할 인터페이스의 MAC address를 알아내야 한다.
      > - ARP 캐시는 대상 IP에 대한 ARP 항목을 확인해서 캐시가 있을 경우 MAC 주소를 반환한다.
@@ -1443,63 +1443,203 @@
 
      
 
-  7. 대상과 TCP 통신을 통해 Socket을 연다
+  7. #### 대상과 TCP 통신을 통해 Socket을 연다
 
      ![](https://docs.oracle.com/cd/E38901_01/html/E38894/figures/ipov.fig88.png)
 
-     
+     - 브라우저가 대상 서버의 IP 주소를 받으면 URL에서 해당 포트 번호를 가져와서 TCP Socket stream 요청
 
-  
+     - TCP segment가 만들어지는 Transport Layer(OSI Model Layer 4)로 전달. 대상 포트 header에 추가되고 source port는 시스템에서 동적 포트 범위내에서 임의 지정
 
-  
+     - TCP segment를 Network Layer(OSI Model Layer 3)로 전달. segment header에 대상 컴퓨터의 IP 주소와 현재 컴퓨터의 IP주소가 삽입된 패킷 구성
 
-  
+     - 패킷이 Link Layer(OSI Model Layer 2)로 전달. 시스템의 MAC address와 게이트웨이의 MAC주소를 포함하는 Frame header추가 (게이트웨이의 MAC주소를 모를 경우에는 ARP를 이용해 찾아야 한다.)
 
-  
+     - 패킷이 ethernet, WIfi, Cellular data network 중 하나로 전송
 
-  
+     - packet local subnet router ehckr, AS경계 router들을 통과
 
-  
+     - TCP socket 통신 과정
 
-  
+       ![](https://t1.daumcdn.net/cfile/tistory/99D686335A16BB8E0B)
 
-  
+       
 
-  
+  8. #### HTTPS인 경우 TLS handshake가 추가된다.
 
-  
+     > TLS는 SSL이 표준화되면서 바뀐 이름이다. HTTPS로 통신을 하게 되면 7번 TCP socket 통신과정 전에 추가 통신이 추가 된다.
 
-  
+  9. #### HTTP 프로토콜로 요청한다
 
-  
+     - 그냥 HTTP라면 7번의 connection set up 이후 부터이고, HTTPS 라면 추가된 이후부터이다.
 
-  
+  10. #### HTTP 서버가 응답한다.
 
-  
+      - HTTPD (HTTP daemon) 서버는 요청 / 응답을 처리하는 서버이다. 가장 일반적인 HTTPD 서버는 Linux의 경우 Apache 또는 Nginx이고 Window의 경우 IIS 이다.
 
-  
+        1. HTTPD 서버가 요청을 수신
 
-  
+        2. 서버는 요청을 다음 매개변수로 구분
 
-  
+           > - HTTP method (GET, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE, HEAD). 주소 표시줄에 직접 입력한 url의 경우는 GET
+           > - 도메인
+           > - 요청된 경로
 
-  
+        3. 서버는 google.com이 GET 요청을 수락할 수 있는지 확인
 
-  
+        4. 서버는 클라이언트가 IP, 인증 등을 통해 이 method를 사용할 수 있는지 확인
 
-  
+        5. 서버에 rewrite module이 설치 돼 있으면 요청된 rule 중 하나와 일치하도록 시도, 일치하는 rule이 있는 경우 서버는 해당 rule을 사용하여 요청을 다시 작성
 
-  
+        6. 서버는 요청에 해당하는 컨텐츠를 가져오고, 여기서는 '/'가 기본 경로이므로 이 경우 index파일을 해석
 
-  
+        7. 서버는 핸들러에 따라 파일을 구문 분석한다. php인 경우는 php를 사용하여 index 파일 해석 후 출력을 클라이언트로 스트리밍
 
-  
+  11. #### 웹 브라우저가 그린다.
 
-  
 
-  
 
-  
+---
+
+
+
+## 프레임워크와 라이브러리의 차이
+
+- ### 프레임워크
+
+  - 소프트웨어의 구체적인 부분에 해당하는 설계와 구현을 재사용이 가능하게끔 일련의 협업화된 형태로 클래스들을 제공하는 것
+    - 자동차의 프레임, 즉 기본적으로 구성하고 있는 뼈대
+
+- ### 라이브러리
+
+  - 자주 사용되는 로직을 재사용하기 편리하도록 잘 정리한 일련의 코드들의 집합
+    - 자동차의 기능을 하는 부품
+
+
+
+## Git Branch 종류
+
+- #### Master Branch
+
+  - 제품으로 출시될 수 있는 브랜치
+  - 배포 이력을 관리하기 위해 사용. 즉, 배포 가능한 상태만을 관리한다.
+
+- #### Develop Branch
+
+  - 다음 출시 버전을 개발하는 브랜치
+  - 기능 개발을 위한 브랜치들을 병합하기 위해 사용. 즉, 모든 기능이 추가되고 버그가 수정되어 배포 가능한 안정적인 상태라면 develop 브랜치를 master 브랜치에 병합한다.
+  - 평소에는 이 브랜치를 기반으로 개발을 진행한다.
+
+- #### Feature Branch
+
+  - 기능을 개발하는 브랜치
+  - feature 브랜치는 새로운 기능 개발 및 버그 수정이 필요할 때마다 develop 브랜치로부터 분기한다. feature 브랜치에서의 작업은 기본적으로 공유할 필요가 없기 때문에, 자신의 로컬 저장소에서 관리한다.
+  - 개발이 완료되면 develop 브랜치로 병합하여 다른 사람들과 공유한다.
+
+- #### Release Branch
+
+  - 이번 출시 버전을 준비하는 브랜치
+  - 배포를 위한 전용 브랜치를 사용함으로써 한 팀이 해당 배포를 준비하는 동안 다른 팀은 다음 배포를 위한 기능 개발을 계속 할 수 있다. 즉, 딱딱 끊어지는 개발 단계를 정의하기에 좋다.
+  - 예를 들어, '이번 주에 버전 1.3 배포를 목표로 한다!' 라고 팀 구성원들과 쉽게 소통하고 합의할 수 있다는 말
+
+- #### Hotfix Branch
+
+  - 출시 버전에서 발생한 버그를 수정 하는 브랜치
+  - 배포한 버전에 긴급하게 수정을 해야 할 필요가 있을 경우, master 브랜치에서 분기하는 브랜치이다. develop 브랜치에서 문제가 되는 부분을 수정하여 배포 가능한 버전을 만들기에는 시간도 많이 소요되고 안정성을 보장하기도 어려우므로 바로 배포 가능한 master 브랜치에서 직접 브랜치를 만들어 필요한 부분만을 수정한 후 다시 master 브랜치에 병합하여 이를 배포해야 하는 것이다.
+
+
+
+## Web Server와 WAS의 차이
+
+- #### Web Server
+
+  - Web Server의 개념
+    - 소프트웨어와 하드웨어로 구분된다
+    - 하드웨어
+      - Web 서버가 설치되어 있는 컴퓨터
+    - 소프트웨어
+      - 웹 브라우저 클라이언트로부터 HTTP 요청을 받아 정적인 컨텐츠를 제공하는 컴퓨터 프로그램
+  - Web Server의 기능
+    - HTTP 프로토콜을 기반으로 하여 웹 브라우저의 요청을 서비스 하는 기능을 담당한다.
+    - 요청에 따라 아래의 두 가지 기능 중 적절하게 선택하여 수행한다.
+    - 기능1)
+      - 정적인 컨텐츠 제공
+      - WAS를 거치지 않고 바로 자원을 제공
+    - 기능2)
+      - 동적인 컨텐츠 제공을 위한 요청 전달
+      - 클라이언트의 요청을 WAS에 보내고, WAS가 처리한 결과를 클라이언트에게 전달한다.
+  - Web Server의 예
+    - Apache, Nginx, IIS 등
+
+- #### WAS(Web Application Server)
+
+  - WAS의 개념
+    - DB 조회나 다양한 로직 처리를 요구하는 동적인 컨텐츠를 제공하기 위해 만들어진 Application Server
+    - HTTP를 통해 컴퓨터나 장치에 애플리케이션을 수행해주는 미들웨어이다.
+    - 웹 컨테이너 혹은 서블릿 컨테이너라고도 불린다
+      - 컨테이너란 JSP, Servlet를 실행시킬 수 있는 소프트웨어를 말한다.
+      - 즉, WAS는 JSP, Servlet 구동 환경을 제공한다.
+  - WAS의 기능
+    - WAS = Web Server + Web Container
+    - Web Server 기능들을 구조적으로 분리하여 처리하고자 하는 목적으로 제시 됨
+      - 분산 트랜잭션, 보안, 메시징, 쓰레드 처리 등의 기능을 처리하는 분산 환경에서 사용된다.
+      - 주로 DB 서버와 같이 수행된다.
+  - WAS의 예
+    - Tomcat, JBoss, Jeus, Web Sphere 등
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
