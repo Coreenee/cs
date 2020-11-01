@@ -16,11 +16,11 @@
 
 [7. 정렬알고리즘](#정렬-알고리즘)
 
-[8. Database][#database]
+[8. Database](#database)
 
 [9.Design Pattern](#design-pattern)
 
-[10. Code, Data, Stack, Heap](#code,-data,-stack,-heap-영역)
+[10. Code, Data, Stack, Heap](#code-data-stack-heap)
 
 ---
 
@@ -903,9 +903,7 @@
 
 
 
-
-
-
+---
 
 
 
@@ -1625,7 +1623,7 @@
 
 
 
-# Code, Data, Stack, Heap 영역
+# Code Data Stack Heap
 
 ![](https://t1.daumcdn.net/cfile/tistory/99AD01455BE66A3319)
 
