@@ -1,3 +1,31 @@
+---
+
+## Contents
+
+[1. Brand Experience](#brand-experience)
+
+[2. Hash Table](#hash-table)
+
+[3. Stack](#stack)
+
+[4. Queue](#queue)
+
+[5. Network](#network)
+
+[6. OS](#operating-system)
+
+[7. 정렬알고리즘](#정렬-알고리즘)
+
+[8. Database][#database]
+
+[9.Design Pattern](#design-pattern)
+
+[10. Code, Data, Stack, Heap](#code,-data,-stack,-heap-영역)
+
+---
+
+
+
 # Brand Experience
 
 - 브랜드가 고객을 만나는 모든 활동, 경험
@@ -1597,7 +1625,30 @@
 
 
 
+# Code, Data, Stack, Heap 영역
 
+![](https://t1.daumcdn.net/cfile/tistory/99AD01455BE66A3319)
+
+- ## Code 영역
+
+  - 프로세스가 실행할 코드와 매크로 상수가 기계어의 형태로 저장된 공간이다. <b>컴파일 타임</b>에 결정되고 중간에 코드를 바꿀 수 없게 Read-Only로 지정돼있다.
+
+- ## Data 영역
+
+  - 코드에서 선언한 전역변수 또는 static 변수 등이 저장되는 공간이다. 전역변수/static 값을 참조한 코드는 컴파일 하고나면 Data 영역의 주소 값을 가르키도록 바뀐다. 실행 중에 전역변수가 변경 될 수도 있으니 이 영역은 Read-Write 로 지정돼있다.
+  - 단, 초기화 되지 않는 전역 변수는 BSS 영역에 할당된다.
+
+
+
+- ## Stack 영역
+
+  - 자료구조로 많이 알려진 Stack은 프로세스의 메모리 공간을 관리하기 위한 알고리즘 중 하나이다. 이 영역은 함수 안에서 선언된 지역 변수, 매개변수, 리턴값, 돌아올 주소 등이 저장되고 함수 호출시 기록하고 종료되면 제거한다. 기록하고 종료하는 메커니즘은 자료구조에서 배운 후위선출(LIFO) 방식을 따른다
+  - 컴파일 타임에 크기가 결정되기 때문에 무한히 할당할 수 없다. 재귀함수가 너무 깊게 호출되거나 함수가 지역변수를 너무 많이 가지고 있어 stack 영역을 초과하면 stack overflow 에러가 발생한다.
+
+- ## Heap 영역
+
+  - 프로그래머가 필요할 때마다 사용하는 메모리 영역. Code, Data, Stack 영역과는 다르게 런타임에 결정된다. malloc, calloc으로 Heap 영역의 메모리를 사용할 수 있다. 데이터 배열의 크기가 확실하지 않고 변동이 있을 때 Heap 영역을 활용해서 메모리를 할당한다. 단 사용하고 난 다음에는 반드시 해제를 해야 한다. 그렇지 않으면 memory leak이 발생한다.
+  - 스택보다 할당할 수 있는 메모리 공간이 많다는 장점이 있지만, 포인터로 메모리 영역을 접근해야 하기 때문에 다른 자료구조에 비해서 데이터를 읽고 쓰는게 느리다.
 
 
 
